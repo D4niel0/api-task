@@ -1,46 +1,50 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
-  Patch,
   Post,
   Put,
-  Query,
-  Req,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { TaskDTO } from './dto/task.dto';
+import { TaskService } from './task.service';
 
 @Controller('api/v1/task')
 export class TaskController {
+  constructor(private readonly taskService: TaskService) {}
+
   @Post()
-  method(@Body('description') description: string) {
-    return description;
+  @UsePipes(new ValidationPipe())
+  create(@Body() taskDTO: TaskDTO) {
+    // return this.taskService.create(taskDTO);
+    return new Promise((resolve, reject) => {
+      setTimeout(() => reject('Algo ocurrio mal'), 15000);
+    });
   }
 
-  // @Get('done')
-  // method(@Req() req: Request) {
-  //   return `method ${req.method}`;
-  // }
+  @Get()
+  findAll() {
+    return this.taskService.findAll();
+  }
 
-  // @Post('task')
-  // method(@Req() req: Request) {
-  //   return `method ${req.method}`;
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.taskService.findOne(id);
+  }
 
-  //   @Patch()
-  //   method(@Req() req: Request) {
-  //     return `method ${req.method}`;
-  //   }
+  @Put(':id')
+  update(@Param('id') id: string, @Body() taskDto: TaskDTO) {
+    return this.taskService.update(id, taskDto);
+  }
 
-  //   @Delete()
-  //   method(@Req() req: Request) {
-  //     return `method ${req.method}`;
-  //   }
-
-  //   @Param()
-  //   method(@Req() req: Request) {
-  //     return `method ${req.method}`;
-  //   }
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.taskService.delete(id);
+  }
 }
